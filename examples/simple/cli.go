@@ -9,8 +9,8 @@ import (
 	"time"
 
 	etcd "github.com/coreos/etcd/client"
-	"github.com/mwitkow/go-flagz"
-	"github.com/mwitkow/go-flagz/watcher"
+	"github.com/improbable-eng/go-flagz"
+	"github.com/improbable-eng/go-flagz/watcher"
 	flag "github.com/spf13/pflag"
 )
 

@@ -1,10 +1,10 @@
 # Go FlagZ 
 
-[![Travis Build](https://travis-ci.org/mwitkow/go-flagz.svg)](https://travis-ci.org/mwitkow/go-flagz)
-[![Go Report Card](https://goreportcard.com/badge/github.com/mwitkow/go-flagz)](http://goreportcard.com/report/mwitkow/go-flagz)
-[![GoDoc](http://img.shields.io/badge/GoDoc-Reference-blue.svg)](https://godoc.org/github.com/mwitkow/go-flagz)
-[![SourceGraph](https://sourcegraph.com/github.com/mwitkow/go-flagz/-/badge.svg)](https://sourcegraph.com/github.com/mwitkow/go-flagz/?badge)
-[![codecov](https://codecov.io/gh/mwitkow/go-flagz/branch/master/graph/badge.svg)](https://codecov.io/gh/mwitkow/go-flagz)
+[![Travis Build](https://travis-ci.org/improbable-eng/go-flagz.svg)](https://travis-ci.org/improbable-eng/go-flagz)
+[![Go Report Card](https://goreportcard.com/badge/github.com/improbable-eng/go-flagz)](http://goreportcard.com/report/improbable-eng/go-flagz)
+[![GoDoc](http://img.shields.io/badge/GoDoc-Reference-blue.svg)](https://godoc.org/github.com/improbable-eng/go-flagz)
+[![SourceGraph](https://sourcegraph.com/github.com/improbable-eng/go-flagz/-/badge.svg)](https://sourcegraph.com/github.com/improbable-eng/go-flagz/?badge)
+[![codecov](https://codecov.io/gh/improbable-eng/go-flagz/branch/master/graph/badge.svg)](https://codecov.io/gh/improbable-eng/go-flagz)
 [![Apache 2.0 License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
 Dynamic, thread-safe `flag` variables that can be modified at runtime through [etcd](https://github.com/coreos/etcd)
@@ -44,7 +44,7 @@ All of this can be done simultaneously across a whole shard of your services.
 
 Here's a teaser of the debug endpoint:
 
-![Status Endpoint](https://raw.githubusercontent.com/mwitkow/go-flagz/screenshots/screenshot_endpoint.png)
+![Status Endpoint](https://raw.githubusercontent.com/improbable-eng/go-flagz/screenshots/screenshot_endpoint.png)
 
 ## Examples
 
@@ -114,8 +114,8 @@ This code is *production* quality. It's been running happily in production at Im
 
 Features planned:
  
-  * [x] - [#11](https://github.com/mwitkow/go-flagz/issues/11) monitoring of `FlagSet` checksus using a Prometheus handler
-  * [ ] - [#12](https://github.com/mwitkow/go-flagz/issues/12) support for standard `flag` (requires changes in `spf13/pflag` interfaces)
+  * [x] - [#11](https://github.com/improbable-eng/go-flagz/issues/11) monitoring of `FlagSet` checksus using a Prometheus handler
+  * [ ] - [#12](https://github.com/improbable-eng/go-flagz/issues/12) support for standard `flag` (requires changes in `spf13/pflag` interfaces)
 
 ### License
 

@@ -13,7 +13,7 @@ import (
 
 	"github.com/fsnotify/fsnotify"
 	flag "github.com/spf13/pflag"
-	"github.com/mwitkow/go-flagz"
+	"github.com/improbable-eng/go-flagz"
 )
 
 const (

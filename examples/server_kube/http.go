@@ -10,8 +10,8 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/mwitkow/go-flagz"
-	"github.com/mwitkow/go-flagz/configmap"
+	"github.com/improbable-eng/go-flagz"
+	"github.com/improbable-eng/go-flagz/configmap"
 	flag "github.com/spf13/pflag"
 )
 

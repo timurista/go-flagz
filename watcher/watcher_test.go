@@ -9,11 +9,11 @@ import (
 	"time"
 
 	"github.com/mwitkow/go-etcd-harness"
-	watcher "github.com/mwitkow/go-flagz/watcher"
+	watcher "github.com/improbable-eng/go-flagz/watcher"
 	flag "github.com/spf13/pflag"
 
 	etcd "github.com/coreos/etcd/client"
-	"github.com/mwitkow/go-flagz"
+	"github.com/improbable-eng/go-flagz"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"

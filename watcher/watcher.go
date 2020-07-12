@@ -1,7 +1,7 @@
 // Copyright 2015 Michal Witkowski. All Rights Reserved.
 // See LICENSE for licensing terms.
 
-// Package etcd provides an updater for go "flags"-compatible FlagSets based on dynamic changes in etcd storage.
+// Package watcher provides an etcd-backed Watcher for syncing FlagSet state with etcd.
 
 package watcher
 
@@ -11,15 +11,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/coreos/etcd/Godeps/_workspace/src/golang.org/x/net/context"
 	etcd "github.com/coreos/etcd/client"
-	"github.com/spf13/pflag"
-	"github.com/mwitkow/go-flagz"
+	"github.com/improbable-eng/go-flagz"
+	flag "github.com/spf13/pflag"
+	"golang.org/x/net/context"
 )
 
-
-var(
-	errNoValue = fmt.Errorf("no value in Node")
+var (
+	errNoValue        = fmt.Errorf("no value in Node")
 	errFlagNotDynamic = fmt.Errorf("flag is not dynamic")
 )
 
@@ -27,7 +26,7 @@ var(
 type Watcher struct {
 	client    etcd.Client
 	etcdKeys  etcd.KeysAPI
-	flagSet   *pflag.FlagSet
+	flagSet   *flag.FlagSet
 	logger    loggerCompatible
 	etcdPath  string
 	lastIndex uint64
@@ -43,7 +42,7 @@ type loggerCompatible interface {
 }
 
 // New constructs a new Watcher
-func New(set *pflag.FlagSet, keysApi etcd.KeysAPI, etcdPath string, logger loggerCompatible) (*Watcher, error) {
+func New(set *flag.FlagSet, keysApi etcd.KeysAPI, etcdPath string, logger loggerCompatible) (*Watcher, error) {
 	if !strings.HasSuffix(etcdPath, "/") {
 		etcdPath = etcdPath + "/"
 	}
@@ -64,7 +63,7 @@ func (u *Watcher) Initialize() error {
 	if u.lastIndex != 0 {
 		return fmt.Errorf("flagz: already initialized.")
 	}
-	return u.readAllFlags(/* onlyDynamic */ false)
+	return u.readAllFlags( /* onlyDynamic */ false)
 }
 
 // Start kicks off the go routine that syncs dynamic flags from etcd to FlagSet.
@@ -125,7 +124,8 @@ func (u *Watcher) setFlag(flagName string, value string, onlyDynamic bool) error
 	if onlyDynamic && !flagz.IsFlagDynamic(flag) {
 		return errFlagNotDynamic
 	}
-	return flag.Value.Set(value)
+	// do not call flag.Value.Set, instead go through flagSet.Set to change "changed" state.
+	return u.flagSet.Set(flagName, value)
 }
 
 func (u *Watcher) watchForUpdates() error {
@@ -140,10 +140,15 @@ func (u *Watcher) watchForUpdates() error {
 			// Our index is out of the Etcd Log. Reread everything and reset index.
 			u.logger.Printf("flagz: handling Etcd Index error by re-reading everything: %v", err)
 			time.Sleep(200 * time.Millisecond)
-			u.readAllFlags(/* onlyDynamic */ true)
+			u.readAllFlags( /* onlyDynamic */ true)
 			watcher = u.etcdKeys.Watcher(u.etcdPath, &etcd.WatcherOptions{AfterIndex: u.lastIndex, Recursive: true})
 			continue
 		} else if clusterErr, ok := err.(*etcd.ClusterError); ok {
+			// https://github.com/coreos/etcd/issues/3209
+			if len(clusterErr.Errors) > 0 && clusterErr.Errors[0] == context.Canceled {
+				// same as context.Cancelled case below.
+				break
+			}
 			u.logger.Printf("flagz: etcd ClusterError. Will retry. %v", clusterErr.Detail())
 			time.Sleep(100 * time.Millisecond)
 			continue
@@ -165,7 +170,7 @@ func (u *Watcher) watchForUpdates() error {
 			u.logger.Printf("flagz: ignoring %v at etcdindex=%v", err, u.lastIndex)
 			continue
 		}
-		err = u.setFlag(flagName, resp.Node.Value, /*onlyDynamic*/ true)
+		err = u.setFlag(flagName, resp.Node.Value /*onlyDynamic*/, true)
 		if err == errNoValue {
 			u.logger.Printf("flagz: ignoring action=%v on flag=%v at etcdindex=%v", resp.Action, flagName, u.lastIndex)
 			continue
@@ -191,7 +196,7 @@ func (u *Watcher) rollbackEtcdValue(flagName string, resp *etcd.Response) {
 		_, err = u.etcdKeys.Delete(u.context, resp.Node.Key, &etcd.DeleteOptions{PrevIndex: u.lastIndex})
 	}
 	if etcdErr, ok := err.(etcd.Error); ok && etcdErr.Code == etcd.ErrorCodeTestFailed {
-		// Someone probably rolled it back in the mean time.
+		// Someone probably rolled it back in the meantime.
 		u.logger.Printf("flagz: rolled back flag=%v was changed by someone else. All good.", flagName)
 	} else if err != nil {
 		u.logger.Printf("flagz: rolling back flagz=%v failed: %v", flagName, err)
@@ -199,7 +204,6 @@ func (u *Watcher) rollbackEtcdValue(flagName string, resp *etcd.Response) {
 		u.logger.Printf("flagz: rolled back flagz=%v to correct state. All good.", flagName)
 	}
 }
-
 
 func (u *Watcher) nodeToFlagName(node *etcd.Node) (string, error) {
 	if node.Dir {
@@ -214,4 +218,3 @@ func (u *Watcher) nodeToFlagName(node *etcd.Node) (string, error) {
 	}
 	return truncated, nil
 }
-

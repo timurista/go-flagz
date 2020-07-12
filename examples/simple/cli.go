@@ -5,25 +5,27 @@ package main
 
 import (
 	"log"
-
 	"os"
 	"time"
 
 	etcd "github.com/coreos/etcd/client"
-	"github.com/mwitkow/go-flagz/watcher"
+	"github.com/improbable-eng/go-flagz"
+	"github.com/improbable-eng/go-flagz/watcher"
 	flag "github.com/spf13/pflag"
 )
 
 var (
 	myFlagSet = flag.NewFlagSet("custom_flagset", flag.ContinueOnError)
 
-	myString = myFlagSet.String("somestring", "initial_value", "someusage")
-	myInt    = myFlagSet.Int("someint", 1337, "someusage int")
+	staticInt = myFlagSet.Int32("example_my_static_int", 8080, "some static int int")
+
+	dynStr = flagz.DynString(myFlagSet, "example_my_dynamic_string", "initial_value", "someusage")
+	dynInt = flagz.DynInt64(myFlagSet, "example_my_dynamic_int", 1337, "someusage int")
 )
 
 func main() {
 	myFlagSet.Parse(os.Args[1:])
-	logger := log.New(os.Stderr, "updater", 0)
+	logger := log.New(os.Stderr, "wr ", log.LstdFlags)
 
 	client, err := etcd.New(etcd.Config{Endpoints: []string{"http://localhost:2379"}})
 	if err != nil {
@@ -40,7 +42,10 @@ func main() {
 	w.Start()
 
 	for true {
-		logger.Printf("someint: %v somestring: %v", *myInt, *myString)
+		logger.Printf("staticint: %v dynint: %v dynstring: %v",
+			*staticInt,
+			dynInt.Get(),
+			dynStr.Get())
 		time.Sleep(1500 * time.Millisecond)
 	}
 }

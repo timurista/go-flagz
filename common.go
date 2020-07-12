@@ -3,24 +3,21 @@
 
 package flagz
 
-import (
-	flag "github.com/spf13/pflag"
-)
+import "github.com/spf13/pflag"
 
 const (
 	dynamicMarker = "__is_dynamic"
 )
 
-// MarkFlagDynamic marks the flag as Dynamic and changeable at runtime.
-func MarkFlagDynamic(f *flag.Flag) {
-	if f.Annotations == nil {
-		f.Annotations = make(map[string][]string)
+func setFlagDynamic(flag *pflag.Flag) {
+	if flag.Annotations == nil {
+		flag.Annotations = make(map[string][]string)
 	}
-	f.Annotations[dynamicMarker] = []string{}
+	flag.Annotations[dynamicMarker] = []string{}
 }
 
 // IsFlagDynamic returns whether the given Flag has been created in a Dynamic mode.
-func IsFlagDynamic(f *flag.Flag) bool {
-	_, ok := f.Annotations[dynamicMarker]
-	return ok
+func IsFlagDynamic(flag *pflag.Flag) bool {
+	_, exists := flag.Annotations[dynamicMarker]
+	return exists
 }

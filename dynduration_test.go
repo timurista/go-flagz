@@ -4,11 +4,13 @@
 package flagz
 
 import (
-	"fmt"
 	"testing"
-	"time"
 
 	flag "github.com/spf13/pflag"
+
+	"fmt"
+	"time"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -41,30 +43,12 @@ func TestDynDuration_FiresValidators(t *testing.T) {
 	assert.Error(t, set.Set("some_duration_1", "2h"), "error from validator when value out of range")
 }
 
-func TestDynDuration_FiresNotifier(t *testing.T) {
-	waitCh := make(chan bool, 1)
-	notifier := func(oldVal time.Duration, newVal time.Duration) {
-		assert.EqualValues(t, 5*time.Second, oldVal, "old value in notify must match previous value")
-		assert.EqualValues(t, 30*time.Second, newVal, "new value in notify must match set value")
-		waitCh <- true
-	}
-
-	set := flag.NewFlagSet("foobar", flag.ContinueOnError)
-	DynDuration(set, "some_duration_1", 5*time.Second, "Use it or lose it").WithNotifier(notifier)
-	set.Set("some_duration_1", "30s")
-	select {
-	case <-time.After(5 * time.Millisecond):
-		assert.Fail(t, "failed to trigger notifier")
-	case <-waitCh:
-	}
-}
-
 func Benchmark_Duration_Dyn_Get(b *testing.B) {
 	set := flag.NewFlagSet("foobar", flag.ContinueOnError)
 	value := DynDuration(set, "some_duration_1", 5*time.Second, "Use it or lose it")
 	set.Set("some_duration_1", "10s")
 	for i := 0; i < b.N; i++ {
-		value.Get().Nanoseconds()
+		value.Get()
 	}
 }
 
@@ -73,6 +57,7 @@ func Benchmark_Duration_Normal_get(b *testing.B) {
 	valPtr := set.Duration("some_duration_1", 5*time.Second, "Use it or lose it")
 	set.Set("some_duration_1", "10s")
 	for i := 0; i < b.N; i++ {
-		(*valPtr).Nanoseconds()
+		x := *valPtr
+		x = x
 	}
 }

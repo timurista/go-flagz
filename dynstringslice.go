@@ -10,15 +10,15 @@ import (
 	"sync/atomic"
 	"unsafe"
 
-	flag "github.com/spf13/pflag"
+	"github.com/spf13/pflag"
 )
 
 // DynStringSlice creates a `Flag` that represents `[]string` which is safe to change dynamically at runtime.
 // Unlike `pflag.StringSlice`, consecutive sets don't append to the slice, but override it.
-func DynStringSlice(flagSet *flag.FlagSet, name string, value []string, usage string) *DynStringSliceValue {
+func DynStringSlice(flagSet *pflag.FlagSet, name string, value []string, usage string) *DynStringSliceValue {
 	dynValue := &DynStringSliceValue{ptr: unsafe.Pointer(&value)}
 	flag := flagSet.VarPF(dynValue, name, "", usage)
-	MarkFlagDynamic(flag)
+	setFlagDynamic(flag)
 	return dynValue
 }
 
@@ -26,7 +26,6 @@ func DynStringSlice(flagSet *flag.FlagSet, name string, value []string, usage st
 type DynStringSliceValue struct {
 	ptr       unsafe.Pointer
 	validator func([]string) error
-	notifier  func(oldValue []string, newValue []string)
 }
 
 // Get retrieves the value in a thread-safe manner.
@@ -49,26 +48,15 @@ func (d *DynStringSliceValue) Set(val string) error {
 			return err
 		}
 	}
-	oldPtr := atomic.SwapPointer(&d.ptr, unsafe.Pointer(&v))
-	if d.notifier != nil {
-		go d.notifier(*(*[]string)(oldPtr), v)
-	}
+	atomic.StorePointer(&d.ptr, unsafe.Pointer(&v))
 	return nil
 }
 
 // WithValidator adds a function that checks values before they're set.
 // Any error returned by the validator will lead to the value being rejected.
 // Validators are executed on the same go-routine as the call to `Set`.
-func (d *DynStringSliceValue) WithValidator(validator func([]string) error) *DynStringSliceValue {
+func (d *DynStringSliceValue) WithValidator(validator func([]string) error) {
 	d.validator = validator
-	return d
-}
-
-// WithNotifier adds a function that is called every time a new value is successfully set.
-// Each notifier is executed asynchronously in a new go-routine.
-func (d *DynStringSliceValue) WithNotifier(notifier func(oldValue []string, newValue []string)) *DynStringSliceValue {
-	d.notifier = notifier
-	return d
 }
 
 // Type is an indicator of what this flag represents.

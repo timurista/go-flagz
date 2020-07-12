@@ -9,11 +9,12 @@ import (
 	"time"
 
 	"github.com/mwitkow/go-etcd-harness"
-	watcher "github.com/improbable-eng/go-flagz/watcher"
+	watcher "github.com/mwitkow/go-flagz/watcher"
 	flag "github.com/spf13/pflag"
 
+	"github.com/Sirupsen/logrus"
 	etcd "github.com/coreos/etcd/client"
-	"github.com/improbable-eng/go-flagz"
+	"github.com/mwitkow/go-flagz"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -22,6 +23,10 @@ import (
 
 const (
 	prefix = "/updater_test/"
+)
+
+var (
+	logger = logrus.StandardLogger()
 )
 
 // Define the suite, and absorb the built-in basic suite
@@ -221,7 +226,7 @@ func eventually(t *testing.T, duration time.Duration,
 }
 
 func newCtx() context.Context {
-	c, _ := context.WithTimeout(context.TODO(), 500*time.Millisecond)
+	c, _ := context.WithTimeout(context.TODO(), 50*time.Millisecond)
 	return c
 }
 

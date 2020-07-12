@@ -8,14 +8,15 @@ import (
 	"sync/atomic"
 	"time"
 
-	flag "github.com/spf13/pflag"
+	"github.com/spf13/pflag"
 )
 
+
 // DynDuration creates a `Flag` that represents `time.Duration` which is safe to change dynamically at runtime.
-func DynDuration(flagSet *flag.FlagSet, name string, value time.Duration, usage string) *DynDurationValue {
+func DynDuration(flagSet *pflag.FlagSet, name string, value time.Duration, usage string) *DynDurationValue {
 	dynValue := &DynDurationValue{ptr: (*int64)(&value)}
 	flag := flagSet.VarPF(dynValue, name, "", usage)
-	MarkFlagDynamic(flag)
+	setFlagDynamic(flag)
 	return dynValue
 }
 
@@ -23,7 +24,6 @@ func DynDuration(flagSet *flag.FlagSet, name string, value time.Duration, usage 
 type DynDurationValue struct {
 	ptr       *int64
 	validator func(time.Duration) error
-	notifier  func(oldValue time.Duration, newValue time.Duration)
 }
 
 // Get retrieves the value in a thread-safe manner.
@@ -45,26 +45,15 @@ func (d *DynDurationValue) Set(input string) error {
 			return err
 		}
 	}
-	oldPtr := atomic.SwapInt64(d.ptr, (int64)(v))
-	if d.notifier != nil {
-		go d.notifier((time.Duration)(oldPtr), v)
-	}
+	atomic.StoreInt64(d.ptr, (int64)(v))
 	return nil
 }
 
 // WithValidator adds a function that checks values before they're set.
 // Any error returned by the validator will lead to the value being rejected.
 // Validators are executed on the same go-routine as the call to `Set`.
-func (d *DynDurationValue) WithValidator(validator func(time.Duration) error) *DynDurationValue {
+func (d *DynDurationValue) WithValidator(validator func(time.Duration) error) {
 	d.validator = validator
-	return d
-}
-
-// WithNotifier adds a function is called every time a new value is successfully set.
-// Each notifier is executed in a new go-routine.
-func (d *DynDurationValue) WithNotifier(notifier func(oldValue time.Duration, newValue time.Duration)) *DynDurationValue {
-	d.notifier = notifier
-	return d
 }
 
 // Type is an indicator of what this flag represents.

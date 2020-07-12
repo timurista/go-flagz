@@ -8,22 +8,21 @@ import (
 	"strconv"
 	"sync/atomic"
 
-	flag "github.com/spf13/pflag"
+	"github.com/spf13/pflag"
 )
 
-// DynInt64 creates a `Flag` that represents `int64` which is safe to change dynamically at runtime.
-func DynInt64(flagSet *flag.FlagSet, name string, value int64, usage string) *DynInt64Value {
+// DynDuration creates a `Flag` that represents `int64` which is safe to change dynamically at runtime.
+func DynInt64(flagSet *pflag.FlagSet, name string, value int64, usage string) *DynInt64Value {
 	dynValue := &DynInt64Value{ptr: &value}
 	flag := flagSet.VarPF(dynValue, name, "", usage)
-	MarkFlagDynamic(flag)
+	setFlagDynamic(flag)
 	return dynValue
 }
 
-// DynInt64Value is a flag-related `int64` value wrapper.
+// DynDurationValue is a flag-related `int64` value wrapper.
 type DynInt64Value struct {
 	ptr       *int64
 	validator func(int64) error
-	notifier  func(oldValue int64, newValue int64)
 }
 
 // Get retrieves the value in a thread-safe manner.
@@ -45,26 +44,15 @@ func (d *DynInt64Value) Set(input string) error {
 			return err
 		}
 	}
-	oldVal := atomic.SwapInt64(d.ptr, val)
-	if d.notifier != nil {
-		go d.notifier(oldVal, val)
-	}
+	atomic.StoreInt64(d.ptr, val)
 	return nil
 }
 
 // WithValidator adds a function that checks values before they're set.
 // Any error returned by the validator will lead to the value being rejected.
 // Validators are executed on the same go-routine as the call to `Set`.
-func (d *DynInt64Value) WithValidator(validator func(int64) error) *DynInt64Value {
+func (d *DynInt64Value) WithValidator(validator func(int64) error) {
 	d.validator = validator
-	return d
-}
-
-// WithNotifier adds a function is called every time a new value is successfully set.
-// Each notifier is executed in a new go-routine.
-func (d *DynInt64Value) WithNotifier(notifier func(oldValue int64, newValue int64)) *DynInt64Value {
-	d.notifier = notifier
-	return d
 }
 
 // Type is an indicator of what this flag represents.

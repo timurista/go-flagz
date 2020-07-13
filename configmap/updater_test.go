@@ -5,6 +5,7 @@ package configmap_test
 
 import (
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 	"time"
@@ -107,6 +108,9 @@ func (s *updaterTestSuite) TestDynamicUpdatesPropagate() {
 }
 
 func TestUpdaterSuite(t *testing.T) {
+	if runtime.GOOS != "linux" {
+		t.Skip("Not running on linux, skipping configmap tests")
+	}
 	suite.Run(t, &updaterTestSuite{})
 }
 

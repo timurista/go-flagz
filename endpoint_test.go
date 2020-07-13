@@ -5,12 +5,12 @@ package flagz
 
 import (
 	"encoding/json"
+	"flag"
 	"net/http"
 	"net/http/httptest"
 	"sort"
 	"testing"
 
-	flag "github.com/spf13/pflag"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -31,7 +31,7 @@ func (s *endpointTestSuite) SetupTest() {
 	s.endpoint = NewStatusEndpoint(s.flagSet)
 
 	s.flagSet.String("some_static_string", "trolololo", "Some static string text")
-	s.flagSet.Float32("some_static_float", 3.14, "Some static int text")
+	s.flagSet.Float64("some_static_float", 3.14, "Some static int text")
 
 	DynStringSlice(s.flagSet, "some_dyn_stringslice", []string{"foo", "bar"}, "Some dynamic slice text")
 	DynJSON(s.flagSet, "some_dyn_json", &testJSON{SomeString: "foo", SomeInt: 1337}, "Some dynamic JSON text")

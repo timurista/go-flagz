@@ -8,9 +8,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mwitkow/go-etcd-harness"
+	"flag"
+
 	watcher "github.com/ldemailly/go-flagz/watcher"
-	flag "github.com/spf13/pflag"
+	etcd_harness "github.com/mwitkow/go-etcd-harness"
 
 	etcd "github.com/coreos/etcd/client"
 	"github.com/ldemailly/go-flagz"

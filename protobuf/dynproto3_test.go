@@ -9,10 +9,11 @@ import (
 	"fmt"
 	"time"
 
+	"flag"
+
 	"github.com/golang/protobuf/proto"
 	"github.com/ldemailly/go-flagz"
-	"github.com/ldemailly/go-flagz/protobuf/testdata"
-	flag "github.com/spf13/pflag"
+	mwitkow_testproto "github.com/ldemailly/go-flagz/protobuf/testdata"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

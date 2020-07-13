@@ -6,7 +6,8 @@ package flagz
 import (
 	"testing"
 
-	flag "github.com/spf13/pflag"
+	"flag"
+
 	"github.com/stretchr/testify/assert"
 )
 

@@ -4,10 +4,9 @@
 package flagz
 
 import (
+	"flag"
 	"hash/fnv"
 	"sync"
-
-	"github.com/spf13/pflag"
 )
 
 // @todo Temporary fix for race condition happening in the test:
@@ -16,12 +15,12 @@ import (
 var visitAllMutex = &sync.Mutex{}
 
 // ChecksumFlagSet will generate a FNV of the *set* values in a FlagSet.
-func ChecksumFlagSet(flagSet *pflag.FlagSet, flagFilter func(flag *pflag.Flag) bool) []byte {
+func ChecksumFlagSet(flagSet *flag.FlagSet, flagFilter func(flag *flag.Flag) bool) []byte {
 	h := fnv.New32a()
 
 	visitAllMutex.Lock()
 	defer visitAllMutex.Unlock()
-	flagSet.VisitAll(func(flag *pflag.Flag) {
+	flagSet.VisitAll(func(flag *flag.Flag) {
 		if flagFilter != nil && !flagFilter(flag) {
 			return
 		}

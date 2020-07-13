@@ -11,20 +11,20 @@ import (
 	"path"
 	"strings"
 
+	"flag"
+
 	"github.com/fsnotify/fsnotify"
-	flag "github.com/spf13/pflag"
 	"github.com/ldemailly/go-flagz"
 )
 
 const (
 	k8sInternalsPrefix = ".."
-	k8sDataSymlink = "..data"
+	k8sDataSymlink     = "..data"
 )
-
 
 var (
 	errFlagNotDynamic = fmt.Errorf("flag is not dynamic")
-	errFlagNotFound = fmt.Errorf("flag not found")
+	errFlagNotFound   = fmt.Errorf("flag not found")
 )
 
 // Minimum logger interface needed.
@@ -40,7 +40,6 @@ type Updater struct {
 	flagSet *flag.FlagSet
 	logger  loggerCompatible
 	done    chan bool
-
 }
 
 func New(flagSet *flag.FlagSet, dirPath string, logger loggerCompatible) (*Updater, error) {
@@ -60,7 +59,7 @@ func (u *Updater) Initialize() error {
 	if u.started {
 		return fmt.Errorf("flagz: already initialized updater.")
 	}
-	return u.readAll(/* allowNonDynamic */ false)
+	return u.readAll( /* allowNonDynamic */ false)
 }
 
 // Start kicks off the go routine that watches the directory for updates of values.
@@ -69,7 +68,7 @@ func (u *Updater) Start() error {
 		return fmt.Errorf("flagz: updater already started.")
 	}
 	u.watcher.Add(path.Join(u.dirPath, "..")) // add parent in case the dirPath is a symlink itself
-	u.watcher.Add(u.dirPath) // add the dir itself.
+	u.watcher.Add(u.dirPath)                  // add the dir itself.
 
 	u.done = make(chan bool)
 	go u.watchForUpdates()
@@ -113,7 +112,6 @@ func (u *Updater) readAll(dynamicOnly bool) error {
 	return nil
 }
 
-
 func (u *Updater) readFlagFile(fullPath string, dynamicOnly bool) error {
 	flagName := path.Base(fullPath)
 	flag := u.flagSet.Lookup(flagName)
@@ -142,7 +140,7 @@ func (u *Updater) watchForUpdates() {
 				case fsnotify.Create:
 					u.watcher.Add(u.dirPath)
 					u.logger.Printf("flagz: Re-reading flags after ConfigMap update.")
-					if err := u.readAll(/* dynamicOnly */ true); err != nil {
+					if err := u.readAll( /* dynamicOnly */ true); err != nil {
 						u.logger.Printf("flagz: directory reload yielded errors: %v", err.Error())
 					}
 				case fsnotify.Remove:

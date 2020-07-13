@@ -8,19 +8,19 @@ import (
 	"sync/atomic"
 	"time"
 
-	flag "github.com/spf13/pflag"
+	"flag"
 )
 
 // DynDuration creates a `Flag` that represents `time.Duration` which is safe to change dynamically at runtime.
 func DynDuration(flagSet *flag.FlagSet, name string, value time.Duration, usage string) *DynDurationValue {
 	dynValue := &DynDurationValue{ptr: (*int64)(&value)}
-	flag := flagSet.VarPF(dynValue, name, "", usage)
-	MarkFlagDynamic(flag)
+	flagSet.Var(dynValue, name, usage)
 	return dynValue
 }
 
 // DynDurationValue is a flag-related `time.Duration` value wrapper.
 type DynDurationValue struct {
+	dynamicFlagValue
 	ptr       *int64
 	validator func(time.Duration) error
 	notifier  func(oldValue time.Duration, newValue time.Duration)

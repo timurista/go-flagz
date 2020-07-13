@@ -4,16 +4,15 @@
 package protoflagz
 
 import (
+	"flag"
 	"reflect"
+	"strings"
 	"sync/atomic"
 	"unsafe"
-
-	"strings"
 
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/proto"
 	"github.com/ldemailly/go-flagz"
-	flag "github.com/spf13/pflag"
 )
 
 // DynProto3 creates a `Flag` that is backed by an arbitrary Proto3-generated datastructure which is safe to change
@@ -31,9 +30,8 @@ func DynProto3(flagSet *flag.FlagSet, name string, value proto.Message, usage st
 		flagSet:    flagSet,
 		flagName:   name,
 	}
-	f := flagSet.VarPF(dynValue, name, "", usage)
-	f.DefValue = dynValue.usageString()
-	flagz.MarkFlagDynamic(f)
+	flagSet.Var(dynValue, name, usage)
+	flagSet.Lookup(name).DefValue = dynValue.usageString()
 	return dynValue
 }
 

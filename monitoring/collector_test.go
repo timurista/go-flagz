@@ -15,10 +15,11 @@ import (
 	"io"
 	"strings"
 
+	"flag"
+
 	"github.com/ldemailly/go-flagz"
 	"github.com/ldemailly/go-flagz/monitoring"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	flag "github.com/spf13/pflag"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 )

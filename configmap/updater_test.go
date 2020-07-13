@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	flag "github.com/spf13/pflag"
+	"flag"
 
 	"io/ioutil"
 	"os/exec"

@@ -9,19 +9,19 @@ import (
 	"sync/atomic"
 	"unsafe"
 
-	flag "github.com/spf13/pflag"
+	"flag"
 )
 
 // DynFloat64 creates a `Flag` that represents `float64` which is safe to change dynamically at runtime.
 func DynFloat64(flagSet *flag.FlagSet, name string, value float64, usage string) *DynFloat64Value {
 	dynValue := &DynFloat64Value{ptr: unsafe.Pointer(&value)}
-	flag := flagSet.VarPF(dynValue, name, "", usage)
-	MarkFlagDynamic(flag)
+	flagSet.Var(dynValue, name, usage)
 	return dynValue
 }
 
 // DynFloat64Value is a flag-related `float64` value wrapper.
 type DynFloat64Value struct {
+	dynamicFlagValue
 	ptr       unsafe.Pointer
 	validator func(float64) error
 	notifier  func(oldValue float64, newValue float64)

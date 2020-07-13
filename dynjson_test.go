@@ -8,7 +8,8 @@ import (
 	"testing"
 	"time"
 
-	flag "github.com/spf13/pflag"
+	"flag"
+
 	"github.com/stretchr/testify/assert"
 )
 

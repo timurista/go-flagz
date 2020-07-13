@@ -13,7 +13,7 @@ import (
 
 	"fmt"
 
-	flag "github.com/spf13/pflag"
+	"flag"
 )
 
 // StatusEndpoint is a collection of `http.HandlerFunc` that serve debug pages about a given `FlagSet.
@@ -35,7 +35,7 @@ func (e *StatusEndpoint) ListFlags(resp http.ResponseWriter, req *http.Request) 
 
 	flagSetJSON := &flagSetJSON{}
 	e.flagSet.VisitAll(func(f *flag.Flag) {
-		if onlyChanged && !f.Changed {
+		if onlyChanged && f.Value.String() != f.DefValue { // not exactly the same as "changed" (!)
 			return
 		}
 		if onlyDynamic && !IsFlagDynamic(f) {
@@ -149,10 +149,10 @@ func flagToJSON(f *flag.Flag) *flagJSON {
 		Description:  f.Usage,
 		CurrentValue: f.Value.String(),
 		DefaultValue: f.DefValue,
-		IsChanged:    f.Changed,
+		IsChanged:    f.Value.String() != f.DefValue,
 		IsDynamic:    IsFlagDynamic(f),
 	}
-	if strings.Contains(f.Value.Type(), "json") {
+	if _, ok := f.Value.(DynamicJsonFlagValue); ok {
 		fj.CurrentValue = prettyPrintJSON(fj.CurrentValue)
 		fj.DefaultValue = prettyPrintJSON(fj.DefaultValue)
 	}

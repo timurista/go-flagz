@@ -8,16 +8,17 @@ import (
 	"os"
 	"time"
 
+	"flag"
+
 	etcd "github.com/coreos/etcd/client"
 	"github.com/ldemailly/go-flagz"
 	"github.com/ldemailly/go-flagz/watcher"
-	flag "github.com/spf13/pflag"
 )
 
 var (
 	myFlagSet = flag.NewFlagSet("custom_flagset", flag.ContinueOnError)
 
-	staticInt = myFlagSet.Int32("example_my_static_int", 8080, "some static int int")
+	staticInt = myFlagSet.Int("example_my_static_int", 8080, "some static int int")
 
 	dynStr = flagz.DynString(myFlagSet, "example_my_dynamic_string", "initial_value", "someusage")
 	dynInt = flagz.DynInt64(myFlagSet, "example_my_dynamic_int", 1337, "someusage int")

@@ -11,9 +11,10 @@ import (
 	"strings"
 	"time"
 
+	"flag"
+
 	etcd "github.com/coreos/etcd/client"
 	"github.com/ldemailly/go-flagz"
-	flag "github.com/spf13/pflag"
 	"golang.org/x/net/context"
 )
 

@@ -4,24 +4,23 @@
 package flagz
 
 import (
+	"flag"
 	"fmt"
 	"regexp"
 	"sync/atomic"
 	"unsafe"
-
-	flag "github.com/spf13/pflag"
 )
 
 // DynString creates a `Flag` that represents `string` which is safe to change dynamically at runtime.
 func DynString(flagSet *flag.FlagSet, name string, value string, usage string) *DynStringValue {
 	dynValue := &DynStringValue{ptr: unsafe.Pointer(&value)}
-	flag := flagSet.VarPF(dynValue, name, "", usage)
-	MarkFlagDynamic(flag)
+	flagSet.Var(dynValue, name, usage)
 	return dynValue
 }
 
 // DynStringValue is a flag-related `time.Duration` value wrapper.
 type DynStringValue struct {
+	dynamicFlagValue
 	ptr       unsafe.Pointer
 	validator func(string) error
 	notifier  func(oldValue string, newValue string)

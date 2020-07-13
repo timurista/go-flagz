@@ -12,7 +12,7 @@ import (
 
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/proto"
-	"github.com/improbable-eng/go-flagz"
+	"github.com/ldemailly/go-flagz"
 	flag "github.com/spf13/pflag"
 )
 

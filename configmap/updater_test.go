@@ -18,8 +18,8 @@ import (
 
 	"os"
 
-	"github.com/improbable-eng/go-flagz"
-	"github.com/improbable-eng/go-flagz/configmap"
+	"github.com/ldemailly/go-flagz"
+	"github.com/ldemailly/go-flagz/configmap"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"

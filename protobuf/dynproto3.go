@@ -37,6 +37,7 @@ func DynProto3(flagSet *flag.FlagSet, name string, value proto.Message, usage st
 
 // DynJSONValue is a flag-related JSON struct value wrapper.
 type DynProto3Value struct {
+	flagz.DynamicFlagValueTag
 	structType reflect.Type
 	ptr        unsafe.Pointer
 	validator  func(proto.Message) error

@@ -32,7 +32,7 @@ func DynJSON(flagSet *flag.FlagSet, name string, value interface{}, usage string
 
 // DynJSONValue is a flag-related JSON struct value wrapper.
 type DynJSONValue struct {
-	dynamicFlagValue
+	DynamicFlagValueTag
 	structType reflect.Type
 	ptr        unsafe.Pointer
 	validator  func(interface{}) error

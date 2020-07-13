@@ -21,7 +21,7 @@ func DynFloat64(flagSet *flag.FlagSet, name string, value float64, usage string)
 
 // DynFloat64Value is a flag-related `float64` value wrapper.
 type DynFloat64Value struct {
-	dynamicFlagValue
+	DynamicFlagValueTag
 	ptr       unsafe.Pointer
 	validator func(float64) error
 	notifier  func(oldValue float64, newValue float64)

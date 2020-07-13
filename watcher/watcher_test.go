@@ -193,6 +193,8 @@ func (s *watcherTestSuite) Test_DynamicUpdate_DoesntUpdateNonDynamicFlags() {
 }
 
 func TestUpdaterSuite(t *testing.T) {
+	// Disable test until https://github.com/mwitkow/go-etcd-harness/issues/1 is fixed
+	t.Skip("go-etcd-hardness not working for now")
 	harness, err := etcd_harness.New(os.Stderr)
 	if err != nil {
 		t.Fatalf("failed starting test server: %v", err)

@@ -15,9 +15,9 @@ type DynamicJsonFlagValue interface {
 	IsJson() bool
 }
 
-type dynamicFlagValue struct{}
+type DynamicFlagValueTag struct{}
 
-func (*dynamicFlagValue) IsDynamicFlag() bool {
+func (*DynamicFlagValueTag) IsDynamicFlag() bool {
 	return true
 }
 

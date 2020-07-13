@@ -24,7 +24,7 @@ func DynStringSet(flagSet *flag.FlagSet, name string, value []string, usage stri
 
 // DynStringSetValue is a flag-related `map[string]struct{}` value wrapper.
 type DynStringSetValue struct {
-	dynamicFlagValue
+	DynamicFlagValueTag
 	ptr       unsafe.Pointer
 	validator func(map[string]struct{}) error
 	notifier  func(oldValue map[string]struct{}, newValue map[string]struct{})

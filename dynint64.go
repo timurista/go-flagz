@@ -20,7 +20,7 @@ func DynInt64(flagSet *flag.FlagSet, name string, value int64, usage string) *Dy
 
 // DynInt64Value is a flag-related `int64` value wrapper.
 type DynInt64Value struct {
-	dynamicFlagValue
+	DynamicFlagValueTag
 	ptr       *int64
 	validator func(int64) error
 	notifier  func(oldValue int64, newValue int64)

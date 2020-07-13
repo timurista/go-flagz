@@ -28,7 +28,7 @@ func ReadFileFlags(flagSet *flag.FlagSet) error {
 
 // FileReadValue is a flag that wraps another flag and makes it readable from a local file in the filesystem.
 type FileReadValue struct {
-	dynamicFlagValue
+	DynamicFlagValueTag
 	parentFlagName string
 	filePath       string
 	flagSet        *flag.FlagSet

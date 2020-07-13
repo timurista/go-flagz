@@ -20,7 +20,7 @@ func DynString(flagSet *flag.FlagSet, name string, value string, usage string) *
 
 // DynStringValue is a flag-related `time.Duration` value wrapper.
 type DynStringValue struct {
-	dynamicFlagValue
+	DynamicFlagValueTag
 	ptr       unsafe.Pointer
 	validator func(string) error
 	notifier  func(oldValue string, newValue string)

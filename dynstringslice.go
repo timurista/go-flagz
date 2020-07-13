@@ -23,7 +23,7 @@ func DynStringSlice(flagSet *flag.FlagSet, name string, value []string, usage st
 
 // DynStringSliceValue is a flag-related `time.Duration` value wrapper.
 type DynStringSliceValue struct {
-	dynamicFlagValue
+	DynamicFlagValueTag
 	ptr       unsafe.Pointer
 	validator func([]string) error
 	notifier  func(oldValue []string, newValue []string)

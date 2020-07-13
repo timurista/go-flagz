@@ -20,7 +20,7 @@ func DynDuration(flagSet *flag.FlagSet, name string, value time.Duration, usage 
 
 // DynDurationValue is a flag-related `time.Duration` value wrapper.
 type DynDurationValue struct {
-	dynamicFlagValue
+	DynamicFlagValueTag
 	ptr       *int64
 	validator func(time.Duration) error
 	notifier  func(oldValue time.Duration, newValue time.Duration)

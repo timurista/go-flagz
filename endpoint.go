@@ -35,7 +35,7 @@ func (e *StatusEndpoint) ListFlags(resp http.ResponseWriter, req *http.Request) 
 
 	flagSetJSON := &flagSetJSON{}
 	e.flagSet.VisitAll(func(f *flag.Flag) {
-		if onlyChanged && f.Value.String() != f.DefValue { // not exactly the same as "changed" (!)
+		if onlyChanged && f.Value.String() == f.DefValue { // not exactly the same as "changed" (!)
 			return
 		}
 		if onlyDynamic && !IsFlagDynamic(f) {

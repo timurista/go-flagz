@@ -28,3 +28,14 @@ func IsFlagDynamic(f *flag.Flag) bool {
 	_, ok := f.Value.(DynamicFlagValue)
 	return ok
 }
+
+// TODO: consider caching this
+func IsFlagSet(name string) bool {
+	found := false
+	flag.Visit(func(f *flag.Flag) {
+		if f.Name == name {
+			found = true
+		}
+	})
+	return found
+}

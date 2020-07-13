@@ -109,7 +109,7 @@ func (s *updaterTestSuite) TestDynamicUpdatesPropagate() {
 
 func TestUpdaterSuite(t *testing.T) {
 	if runtime.GOOS != "linux" {
-		t.Skip("Not running on linux, skipping configmap tests")
+		t.Skipf("Not running on linux (%v), skipping configmap tests", runtime.GOOS)
 	}
 	suite.Run(t, &updaterTestSuite{})
 }

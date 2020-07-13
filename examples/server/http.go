@@ -4,6 +4,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"html/template"
 	"log"
@@ -13,19 +14,18 @@ import (
 	etcd "github.com/coreos/etcd/client"
 	"github.com/ldemailly/go-flagz"
 	"github.com/ldemailly/go-flagz/watcher"
-	flag "github.com/spf13/pflag"
 )
 
 var (
 	serverFlags = flag.NewFlagSet("server_flags", flag.ContinueOnError)
 
-	listenPort = serverFlags.Int32("port", 8080, "Port the example server listens on.")
+	listenPort = serverFlags.Int("port", 8080, "Port the example server listens on.")
 	listenHost = serverFlags.String("host", "0.0.0.0", "Host to bind the example server to.")
 
-	etcdEndpoints = serverFlags.StringSlice("etcd_endpoints", []string{"http://localhost:2379"}, "etcd endpoints to connect to.")
+	etcdEndpoints = serverFlags.String("etcd_endpoint", "http://localhost:2379", "etcd endpoints to connect to.")
 	etcdFlagzPath = serverFlags.String("flagz_etcd_path", "/example/flagz", "etcd path to directory containing flagz.")
 
-	staticInt = serverFlags.Int32("example_my_static_int", 1337, "Something integery here.")
+	staticInt = serverFlags.Int("example_my_static_int", 1337, "Something integery here.")
 
 	dynStr = flagz.DynString(serverFlags, "example_my_dynamic_string", "initial_value", "Something interesting here.")
 	dynInt = flagz.DynInt64(serverFlags, "example_my_dynamic_int", 1337, "Something integery here.")
@@ -38,7 +38,7 @@ var (
 			Policy: "allow",
 			Rate:   50,
 			Entries: []*exampleEntry{
-				&exampleEntry{Name: "foobar", Allowed: true},
+				{Name: "foobar", Allowed: true},
 			}},
 		"An arbitrary JSON struct.")
 )
@@ -49,7 +49,7 @@ func main() {
 		logger.Fatalf("%v", err)
 	}
 
-	client, err := etcd.New(etcd.Config{Endpoints: *etcdEndpoints})
+	client, err := etcd.New(etcd.Config{Endpoints: []string{*etcdEndpoints}})
 	if err != nil {
 		logger.Fatalf("Failed setting up etcd %v", err)
 	}

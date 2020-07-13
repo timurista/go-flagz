@@ -8,9 +8,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mwitkow/go-etcd-harness"
+	"flag"
+
 	watcher "github.com/ldemailly/go-flagz/watcher"
-	flag "github.com/spf13/pflag"
+	etcd_harness "github.com/mwitkow/go-etcd-harness"
 
 	etcd "github.com/coreos/etcd/client"
 	"github.com/ldemailly/go-flagz"
@@ -192,6 +193,8 @@ func (s *watcherTestSuite) Test_DynamicUpdate_DoesntUpdateNonDynamicFlags() {
 }
 
 func TestUpdaterSuite(t *testing.T) {
+	// Disable test until https://github.com/mwitkow/go-etcd-harness/issues/1 is fixed
+	t.Skip("go-etcd-hardness not working for now")
 	harness, err := etcd_harness.New(os.Stderr)
 	if err != nil {
 		t.Fatalf("failed starting test server: %v", err)

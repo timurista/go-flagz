@@ -8,7 +8,7 @@ import (
 
 	"io/ioutil"
 
-	flag "github.com/spf13/pflag"
+	"flag"
 )
 
 // ReadFileFlags parses the flagset to discover all "fileread" flags and evaluates them.
@@ -28,6 +28,7 @@ func ReadFileFlags(flagSet *flag.FlagSet) error {
 
 // FileReadValue is a flag that wraps another flag and makes it readable from a local file in the filesystem.
 type FileReadValue struct {
+	DynamicFlagValueTag
 	parentFlagName string
 	filePath       string
 	flagSet        *flag.FlagSet
@@ -38,9 +39,8 @@ type FileReadValue struct {
 // If defaultFilePath is non empty, the flagz.ReadFileFlags will expect the file to be there.
 func FileReadFlag(flagSet *flag.FlagSet, parentFlagName string, defaultFilePath string) *FileReadValue {
 	dynValue := &FileReadValue{parentFlagName: parentFlagName, filePath: defaultFilePath, flagSet: flagSet}
-	flagSet.VarPF(dynValue,
+	flagSet.Var(dynValue,
 		parentFlagName+"_path",
-		"",
 		fmt.Sprintf("Path to read contents to a file to read contents of '%v' from.", parentFlagName))
 	return dynValue
 }

@@ -5,11 +5,10 @@ package flagz
 
 import (
 	"encoding/json"
+	"flag"
 	"reflect"
 	"sync/atomic"
 	"unsafe"
-
-	flag "github.com/spf13/pflag"
 )
 
 // DynJSON creates a `Flag` that is backed by an arbitrary JSON which is safe to change dynamically at runtime.
@@ -24,22 +23,26 @@ func DynJSON(flagSet *flag.FlagSet, name string, value interface{}, usage string
 		ptr:        unsafe.Pointer(reflectVal.Pointer()),
 		structType: reflectVal.Type().Elem(),
 		flagSet:    flagSet,
-		flagName: name,
+		flagName:   name,
 	}
-	f := flagSet.VarPF(dynValue, name, "", usage)
-	f.DefValue = dynValue.usageString()
-	MarkFlagDynamic(f)
+	flagSet.Var(dynValue, name, usage)
+	flagSet.Lookup(name).DefValue = dynValue.usageString()
 	return dynValue
 }
 
 // DynJSONValue is a flag-related JSON struct value wrapper.
 type DynJSONValue struct {
+	DynamicFlagValueTag
 	structType reflect.Type
 	ptr        unsafe.Pointer
 	validator  func(interface{}) error
 	notifier   func(oldValue interface{}, newValue interface{})
 	flagName   string
 	flagSet    *flag.FlagSet
+}
+
+func (d *DynJSONValue) IsJson() bool {
+	return true
 }
 
 // Get retrieves the value in its original JSON struct type in a thread-safe manner.
@@ -93,7 +96,6 @@ func (d *DynJSONValue) WithFileFlag(defaultPath string) *DynJSONValue {
 	FileReadFlag(d.flagSet, d.flagName, defaultPath)
 	return d
 }
-
 
 // Type is an indicator of what this flag represents.
 func (d *DynJSONValue) Type() string {

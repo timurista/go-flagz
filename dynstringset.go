@@ -10,7 +10,7 @@ import (
 	"sync/atomic"
 	"unsafe"
 
-	flag "github.com/spf13/pflag"
+	"flag"
 )
 
 // DynStringSet creates a `Flag` that represents `map[string]struct{}` which is safe to change dynamically at runtime.
@@ -18,13 +18,13 @@ import (
 func DynStringSet(flagSet *flag.FlagSet, name string, value []string, usage string) *DynStringSetValue {
 	set := buildStringSet(value)
 	dynValue := &DynStringSetValue{ptr: unsafe.Pointer(&set)}
-	flag := flagSet.VarPF(dynValue, name, "", usage)
-	MarkFlagDynamic(flag)
+	flagSet.Var(dynValue, name, usage)
 	return dynValue
 }
 
 // DynStringSetValue is a flag-related `map[string]struct{}` value wrapper.
 type DynStringSetValue struct {
+	DynamicFlagValueTag
 	ptr       unsafe.Pointer
 	validator func(map[string]struct{}) error
 	notifier  func(oldValue map[string]struct{}, newValue map[string]struct{})

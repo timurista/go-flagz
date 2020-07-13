@@ -10,20 +10,20 @@ import (
 	"sync/atomic"
 	"unsafe"
 
-	flag "github.com/spf13/pflag"
+	"flag"
 )
 
 // DynStringSlice creates a `Flag` that represents `[]string` which is safe to change dynamically at runtime.
 // Unlike `pflag.StringSlice`, consecutive sets don't append to the slice, but override it.
 func DynStringSlice(flagSet *flag.FlagSet, name string, value []string, usage string) *DynStringSliceValue {
 	dynValue := &DynStringSliceValue{ptr: unsafe.Pointer(&value)}
-	flag := flagSet.VarPF(dynValue, name, "", usage)
-	MarkFlagDynamic(flag)
+	flagSet.Var(dynValue, name, usage)
 	return dynValue
 }
 
 // DynStringSliceValue is a flag-related `time.Duration` value wrapper.
 type DynStringSliceValue struct {
+	DynamicFlagValueTag
 	ptr       unsafe.Pointer
 	validator func([]string) error
 	notifier  func(oldValue []string, newValue []string)

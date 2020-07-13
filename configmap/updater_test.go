@@ -37,7 +37,7 @@ type updaterTestSuite struct {
 	tempDir string
 
 	flagSet   *flag.FlagSet
-	staticInt *int32
+	staticInt *int
 	dynInt    *flagz.DynInt64Value
 
 	updater *configmap.Updater
@@ -52,7 +52,7 @@ func (s *updaterTestSuite) SetupTest() {
 
 	s.flagSet = flag.NewFlagSet("updater_test", flag.ContinueOnError)
 	s.dynInt = flagz.DynInt64(s.flagSet, "some_dynint", 1, "dynamic int for testing")
-	s.staticInt = s.flagSet.Int32("some_int", 1, "static int for testing")
+	s.staticInt = s.flagSet.Int("some_int", 1, "static int for testing")
 
 	s.updater, err = configmap.New(s.flagSet, path.Join(s.tempDir, "testdata"), &testingLog{T: s.T()})
 	require.NoError(s.T(), err, "creating a config map must not fail")

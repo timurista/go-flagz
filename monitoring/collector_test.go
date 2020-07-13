@@ -4,18 +4,15 @@
 package monitoring_test
 
 import (
+	"bufio"
+	"flag"
 	"fmt"
+	"io"
 	"math/rand"
 	"net/http"
-	"testing"
-
 	"net/http/httptest"
-
-	"bufio"
-	"io"
 	"strings"
-
-	"flag"
+	"testing"
 
 	"github.com/ldemailly/go-flagz"
 	"github.com/ldemailly/go-flagz/monitoring"
@@ -41,7 +38,7 @@ func (s *monitoringTestSuite) SetupTest() {
 	monitoring.MustRegisterFlagSet(s.setName, s.flagSet)
 
 	s.flagSet.String("some_static_string", "trolololo", "Some static string text")
-	s.flagSet.Float32("some_static_float", 3.14, "Some static int text")
+	s.flagSet.Float64("some_static_float", 3.14, "Some static int text")
 	flagz.DynInt64(s.flagSet, "some_dyn_int", 1337, "Something dynamic")
 	flagz.DynString(s.flagSet, "some_dyn_string", "yolololo", "Something dynamic")
 }

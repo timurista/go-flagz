@@ -17,7 +17,7 @@ func TestDynFloat64_SetAndGet(t *testing.T) {
 	set := flag.NewFlagSet("foobar", flag.ContinueOnError)
 	dynFlag := DynFloat64(set, "some_float_1", 13.37, "Use it or lose it")
 	assert.Equal(t, float64(13.37), dynFlag.Get(), "value must be default after create")
-	err := set.Set("some_float_1", "1.337")
+	err := set.Set("some_float_1", "1.337\n")
 	assert.NoError(t, err, "setting value must succeed")
 	assert.Equal(t, float64(1.337), dynFlag.Get(), "value must be set after update")
 }

@@ -42,6 +42,22 @@ type Updater struct {
 	done    chan bool
 }
 
+func Setup(flagSet *flag.FlagSet, dirPath string, logger loggerCompatible) (*Updater, error) {
+	u, err := New(flagSet, dirPath, logger)
+	if err != nil {
+		return nil, err
+	}
+	err = u.Initialize()
+	if err != nil {
+		return nil, err
+	}
+	if err := u.Start(); err != nil {
+		return nil, err
+	}
+	logger.Printf("Configmap flag value watching initialized on %v", dirPath)
+	return u, nil
+}
+
 func New(flagSet *flag.FlagSet, dirPath string, logger loggerCompatible) (*Updater, error) {
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {

@@ -6,6 +6,7 @@ package flagz
 import (
 	"fmt"
 	"strconv"
+	"strings"
 	"sync/atomic"
 
 	"flag"
@@ -36,7 +37,7 @@ func (d *DynInt64Value) Get() int64 {
 // optional validator.
 // If a notifier is set on the value, it will be invoked in a separate go-routine.
 func (d *DynInt64Value) Set(input string) error {
-	val, err := strconv.ParseInt(input, 0, 64)
+	val, err := strconv.ParseInt(strings.TrimSpace(input), 0, 64)
 	if err != nil {
 		return err
 	}

@@ -16,7 +16,7 @@ func TestDynInt64_SetAndGet(t *testing.T) {
 	set := flag.NewFlagSet("foobar", flag.ContinueOnError)
 	dynFlag := DynInt64(set, "some_int_1", 13371337, "Use it or lose it")
 	assert.Equal(t, int64(13371337), dynFlag.Get(), "value must be default after create")
-	err := set.Set("some_int_1", "77007700")
+	err := set.Set("some_int_1", "77007700\n")
 	assert.NoError(t, err, "setting value must succeed")
 	assert.Equal(t, int64(77007700), dynFlag.Get(), "value must be set after update")
 }

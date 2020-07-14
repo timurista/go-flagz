@@ -28,7 +28,7 @@ All of this can be done simultaneously across a whole shard of your services.
 
 ## Features
 
- * compatible with popular `flag` replacement [`spf13/pflag`](https://github.com/spf13/pflag) (e.g. ones using [`spf13/cobra`](https://github.com/spf13/cobra))
+ * compatible with standard go `flag` package
  * dynamic `flag` that are thread-safe and efficient:
    - `DynInt64`
    - `DynFloat64`
@@ -108,16 +108,11 @@ The `watcher`'s go-routine will watch for `etcd` value changes and synchronise t
 ## More examples:
 
  * [simple http server](examples/server)
- * [printing CLI command](examples/cli)
+ * [printing CLI command](examples/simple)
 
 # Status
 
 This code is *production* quality. It's been running happily in production at Improbable for a few months.
-
-Features planned:
- 
-  * [x] - [#11](https://github.com/ldemailly/go-flagz/issues/11) monitoring of `FlagSet` checksus using a Prometheus handler
-  * [ ] - [#12](https://github.com/ldemailly/go-flagz/issues/12) support for standard `flag` (requires changes in `spf13/pflag` interfaces)
 
 ### License
 

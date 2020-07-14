@@ -17,16 +17,16 @@ Set up a set of flags:
 
 ```sh
 etcdctl mkdir /example/flagz
-etcdctl set /example/flagz/staticint 9090
-etcdctl set /example/flagz/dynstring foo
+etcdctl put /example/flagz/staticint 9090
+etcdctl put /example/flagz/dynstring foo
 ```
 
 Play around by launching the server and visitng [http://localhost:8080](http://localhost:8080):
 
 ```sh
 ./simplesrv &
-etcdctl set /example/flagz/example_my_dynamic_string "I'm santient"
-etcdctl set /example/flagz/example_my_dynamic_int 12345
+etcdctl put /example/flagz/example_my_dynamic_string "I'm santient"
+etcdctl put /example/flagz/example_my_dynamic_int 12345
 ```
 
 Marvel at the [flagz endpoint](http://localhost:8080/debug/flagz)).

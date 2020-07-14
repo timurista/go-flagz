@@ -34,12 +34,13 @@ type loggerCompatible interface {
 }
 
 type Updater struct {
-	started bool
-	dirPath string
-	watcher *fsnotify.Watcher
-	flagSet *flag.FlagSet
-	logger  loggerCompatible
-	done    chan bool
+	started    bool
+	dirPath    string
+	parentPath string
+	watcher    *fsnotify.Watcher
+	flagSet    *flag.FlagSet
+	logger     loggerCompatible
+	done       chan bool
 }
 
 func Setup(flagSet *flag.FlagSet, dirPath string, logger loggerCompatible) (*Updater, error) {
@@ -64,10 +65,11 @@ func New(flagSet *flag.FlagSet, dirPath string, logger loggerCompatible) (*Updat
 		return nil, fmt.Errorf("flagz: error initializing fsnotify watcher.")
 	}
 	return &Updater{
-		flagSet: flagSet,
-		logger:  logger,
-		dirPath: dirPath,
-		watcher: watcher,
+		flagSet:    flagSet,
+		logger:     logger,
+		dirPath:    path.Clean(dirPath),
+		parentPath: path.Clean(path.Join(dirPath, "..")), // add parent in case the dirPath is a symlink itself
+		watcher:    watcher,
 	}, nil
 }
 
@@ -83,9 +85,13 @@ func (u *Updater) Start() error {
 	if u.started {
 		return fmt.Errorf("flagz: updater already started.")
 	}
-	u.watcher.Add(path.Join(u.dirPath, "..")) // add parent in case the dirPath is a symlink itself
-	u.watcher.Add(u.dirPath)                  // add the dir itself.
-
+	if err := u.watcher.Add(u.parentPath); err != nil {
+		return fmt.Errorf("unable to add parent dir %v to watch: %v", u.parentPath, err)
+	}
+	if err := u.watcher.Add(u.dirPath); err != nil { // add the dir itself.
+		return fmt.Errorf("unable to add config dir %v to watch: %v", u.dirPath, err)
+	}
+	u.logger.Printf("Now watching %v and %v", u.parentPath, u.dirPath)
 	u.done = make(chan bool)
 	go u.watchForUpdates()
 	return nil
@@ -97,7 +103,8 @@ func (u *Updater) Stop() error {
 		return fmt.Errorf("flagz: not updating")
 	}
 	u.done <- true
-	u.watcher.Remove(u.dirPath)
+	_ = u.watcher.Remove(u.dirPath)
+	_ = u.watcher.Remove(u.parentPath)
 	return nil
 }
 
@@ -108,8 +115,8 @@ func (u *Updater) readAll(dynamicOnly bool) error {
 	}
 	errorStrings := []string{}
 	for _, f := range files {
-		if strings.HasPrefix(path.Base(f.Name()), "..") {
-			// skip random ConfigMap internals
+		if strings.HasPrefix(path.Base(f.Name()), ".") {
+			// skip random ConfigMap internals and dot files
 			continue
 		}
 		fullPath := path.Join(u.dirPath, f.Name())
@@ -141,8 +148,10 @@ func (u *Updater) readFlagFile(fullPath string, dynamicOnly bool) error {
 	if err != nil {
 		return err
 	}
+	str := string(content)
+	u.logger.Printf("updating %v to %q", flagName, str)
 	// do not call flag.Value.Set, instead go through flagSet.Set to change "changed" state.
-	return u.flagSet.Set(flagName, string(content))
+	return u.flagSet.Set(flagName, str)
 }
 
 func (u *Updater) watchForUpdates() {
@@ -150,28 +159,30 @@ func (u *Updater) watchForUpdates() {
 	for {
 		select {
 		case event := <-u.watcher.Events:
+			//u.logger.Printf("ConfigMap got fsnotify %v ", event)
 			if event.Name == u.dirPath || event.Name == path.Join(u.dirPath, k8sDataSymlink) {
 				// case of the whole directory being re-symlinked
 				switch event.Op {
 				case fsnotify.Create:
-					u.watcher.Add(u.dirPath)
+					if err := u.watcher.Add(u.dirPath); err != nil { // add the dir itself.
+						u.logger.Printf("unable to add config dir %v to watch: %v", u.dirPath, err)
+					}
 					u.logger.Printf("flagz: Re-reading flags after ConfigMap update.")
 					if err := u.readAll( /* dynamicOnly */ true); err != nil {
 						u.logger.Printf("flagz: directory reload yielded errors: %v", err.Error())
 					}
 				case fsnotify.Remove:
 				}
-
 			} else if strings.HasPrefix(event.Name, u.dirPath) && !isK8sInternalDirectory(event.Name) {
+				//u.logger.Printf("ConfigMap got prefix %v", event)
 				switch event.Op {
 				case fsnotify.Create, fsnotify.Write, fsnotify.Rename:
+					flagName := path.Base(event.Name)
 					if err := u.readFlagFile(event.Name, true); err != nil {
-						flagName := path.Base(event.Name)
 						u.logger.Printf("flagz: failed setting flag %s: %v", flagName, err.Error())
 					}
 				}
 			}
-
 		case <-u.done:
 			return
 		}

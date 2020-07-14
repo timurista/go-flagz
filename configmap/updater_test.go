@@ -63,7 +63,7 @@ func (s *updaterTestSuite) SetupTest() {
 func (s *updaterTestSuite) TearDownTest() {
 	require.NoError(s.T(), os.RemoveAll(s.tempDir), "clearing up the test dir must not fail")
 
-	s.updater.Stop()
+	_ = s.updater.Stop()
 	time.Sleep(100 * time.Millisecond)
 }
 

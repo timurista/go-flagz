@@ -5,6 +5,7 @@ package flagz
 
 import (
 	"fmt"
+	"strings"
 	"sync/atomic"
 	"time"
 
@@ -36,7 +37,7 @@ func (d *DynDurationValue) Get() time.Duration {
 // optional validator.
 // If a notifier is set on the value, it will be invoked in a separate go-routine.
 func (d *DynDurationValue) Set(input string) error {
-	v, err := time.ParseDuration(input)
+	v, err := time.ParseDuration(strings.TrimSpace(input))
 	if err != nil {
 		return err
 	}

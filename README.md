@@ -1,6 +1,6 @@
 # Go FlagZ 
 
-[![Travis Build](https://travis-ci.org/ldemailly/go-flagz.svg)](https://travis-ci.org/ldemailly/go-flagz)
+[![CircleCI Build](https://circleci.com/gh/ldemailly/go-flagz.svg?style=shield)](https://circleci.com/gh/ldemailly/go-flagz)
 [![Go Report Card](https://goreportcard.com/badge/github.com/ldemailly/go-flagz)](http://goreportcard.com/report/ldemailly/go-flagz)
 [![GoDoc](http://img.shields.io/badge/GoDoc-Reference-blue.svg)](https://godoc.org/github.com/ldemailly/go-flagz)
 [![SourceGraph](https://sourcegraph.com/github.com/ldemailly/go-flagz/-/badge.svg)](https://sourcegraph.com/github.com/ldemailly/go-flagz/?badge)

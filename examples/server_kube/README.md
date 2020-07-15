@@ -1,10 +1,10 @@
 # Kubernetes ConfigMap example
 
-- First download [etcd](https://github.com/coreos/etcd/releases), extract and make it available on your `$PATH`. (might need to move to `/user/local/bin`)
-- run it by invoking binary `etcd`
-- initialize empty tmp mapping `mkdir -p /tmp/foobar`
+- You need docker and kubernetes. [Docker Desktop](https://www.docker.com/products/docker-desktop), or you can use docker and [minikube](https://minikube.sigs.k8s.io/docs/start/)
+- initialize empty tmp mapping `mkdir -p /tmp/foobar` for kubernetes
 - run the server `go run .`
-- visit the debug `http://localhost:8080/debug/flagz`
+- see port you are serving
+- visit the debug flagz endpoint `http://0.0.0.0:8080/debug/flagz`
 
 Should see this if successful:
 ![](flagz-debug-view.png)
